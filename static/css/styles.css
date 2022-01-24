@@ -1,0 +1,195 @@
+html, body, {
+
+}
+
+nav {
+    background-color: #01559D;
+    padding: 0 3% 0 3%;
+}
+
+#full-nav-no-pad {
+    padding: 0.5% 1%;
+}
+
+
+#full-nav {
+    padding:0px;
+}
+
+.white {
+    color: #A1C0E6;
+}
+
+#title {
+    font-family: 'Roboto Slab', serif;
+    font-weight:700;
+    font-size:4rem
+}
+
+#main-graphic-holder {
+    text-align:center;
+}
+
+#main-graphic {
+    width: 70%;
+}
+
+#add-player-title {
+    margin-left: 7%;
+}
+
+#logo {
+    width: 50%;
+}
+
+#logo2 {
+    font-family: 'Josefin Sans', sans-serif;
+    color: white;
+    font-size: 1.5rem;
+}
+
+#main-area {
+    padding:3%;
+}
+
+#login-form {
+    background-color: #FFF;
+    padding:3% 0;
+    border-radius: 10px;
+    max-width:500px;
+}
+
+#edit-section {
+    background-color: #98A118;
+}
+
+
+.team-section {
+    background-color: #002C52; /* Old Color: #1C95FF */
+    background-image: url('../images/specs.svg');
+    background-position: center;
+    padding: 2% 0;
+}
+
+#roster-section {
+    padding: 2% 0;
+}
+
+.action-icons {
+    padding: 0 10% 0 0;
+}
+
+.right-border {
+    border-right: 1px solid #406CA1;
+}
+
+#red-card-holder {
+    text-align:center;
+    padding: 10% 0;
+}
+
+#player-count {
+    font-size:1.5rem;
+    color: #204566;
+}
+
+#red-card {
+    width:25%;
+    text-align:center;
+
+}
+
+#logout-btn {
+    background-color:#D29000;
+    border:0px;
+}
+
+#edit-form {
+    margin-top:5%;
+    max-width:700px;
+}
+
+/* ADMIN PAGE STYLES */
+
+
+#admin-container {
+    padding:0px;
+}
+
+#admin-title {
+    color: white;
+}
+
+
+#admin-title-container  {
+    text-align:center;
+    background-color: #002C52; /* Old Color: #1C95FF */
+    background-image: url('../images/specs.svg');
+    background-position: center;
+    padding: 1% 0;
+}
+
+.admin-col {
+    padding: 2% 2%;
+}
+
+#left-col-admin {
+    background-color:;
+}
+
+#center-col-admin {
+    background-color:orange;
+}
+
+#right-col-admin {
+    background-color:purple;
+}
+
+
+
+@media (max-width: 576px) {
+
+    .team-section {
+        background-color: #1C95FF;
+        padding: 2% 2%;
+    }
+
+    #player-img-holder {
+        text-align:center;
+    }
+
+    #player-img {
+        width: 20%;
+    }
+
+    #add-player-title {
+    margin-left: 0%;
+}
+
+    #coach-details {
+        padding-top:5%;
+        text-align: center;
+    }
+
+    .right-border {
+        border-right: 0px solid #204566;
+    }
+
+    #add-player-form {
+        padding-top:5%;
+    }
+
+    .add-space {
+        margin-bottom:2%;
+    }
+
+    #add-player-btn {
+        width:100%
+    }
+
+    #roster-section {
+        padding: 2% 3%;
+    }
+
+}
+

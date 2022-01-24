@@ -1,0 +1,66 @@
+{% include 'header2.html' %}
+
+<div class="container-fluid team-section">
+    <div class="container">
+        <div class="row">
+            <div id="player-img-holder" class="col-lg-1">
+                <img id="player-img" src="{{url_for('static', filename='images/Player.svg')}}">
+            </div>
+            <div id="coach-details" class="d-flex align-items-center col-lg-3 right-border">
+                <div>
+                    <h2 class="white">Coach {{coach['name']}}</h2>
+                    <h5 class="white">{{coach['school']}}</h5>
+                </div>
+            </div>
+            <div id="add-player-form" class="col-lg ">
+                <h4 id="add-player-title" class="white">Add Player</h4>
+                <div class="d-flex justify-content-end">
+                <form class="row row-cols-lg-auto" action="{{ url_for('coach_view', email=email) }}" method="POST">
+                    {{ form.csrf_token }}
+                    <div class="col-12 add-space">
+                        {{ form.name(class="form-control", placeholder="Name") }}
+                    </div>
+                    <div class="col-12 add-space">
+                        {{ form.month(class="form-control", placeholder="Birth Month (MM)") }}
+                    </div>
+                    <div class="col-12 add-space">
+                        {{ form.year(class="form-control", placeholder="Birth Year (YYYY)") }}
+                    </div>
+                    <div class="col-12">
+                        {{ form.submit(id="add-player-btn", class="btn btn-success") }}
+                    </div>
+                </form>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="roster-section" class="container">
+    <h1>Player Roster <span id="player-count">- {{players|length}} players</span></h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>School</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        {% for player in players: %}
+        <tbody>
+            <tr>
+                <td>{{player.name}}</td>
+                <td>{{player.born_in}}</td>
+                <td>{{player.school}}</td>
+                <td>
+                    <a class="action-icons" href=" {{url_for('delete', id=player.id, email=email)}} "><i class="fas fa-user-times"></i></a>
+                    <a class="action-icons" href="{{ url_for('edit', id=player.id, email=email) }}"><i class="fas fa-edit"></i></a>
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+
+{% include 'footer.html' %}
