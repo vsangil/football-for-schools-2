@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, Email, Length
 
 app = Flask(__name__)
 # Secret key for csrf token to work on wtforms.
+api_key = os.environ.get("")
 app.secret_key = "hello671"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///players.db'
 
