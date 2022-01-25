@@ -4,11 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, EmailField, PasswordField, SelectField
 from wtforms.validators import DataRequired, Email, Length
+import os
 
 app = Flask(__name__)
 # Secret key for csrf token to work on wtforms.
 app.secret_key = "hello671"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///players.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///players.db")
 
 
 db = SQLAlchemy(app)
