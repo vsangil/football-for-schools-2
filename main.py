@@ -95,8 +95,8 @@ def page_not_found(e):
 @login_manager.user_loader
 def load_user(user_id):
     user = Coach.query.get(user_id)
-    if not user:
-        return render_template('red_card.html')
+    # if not user:
+    #     return render_template('red_card.html')
     return user
 
 
