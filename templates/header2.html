@@ -35,7 +35,7 @@
         <ul class="nav justify-content-end">
             <li class="nav-item">
 
-                <a class="nav-link white" id="account-link" aria-current="page" href="{{url_for('my_account')}}">My Account</a>
+                <a class="nav-link white" id="account-link" aria-current="page" href="{{url_for('my_account', header='Manage Account')}}">My Account</a>
 
             </li>
             <li class="nav-item">
@@ -44,4 +44,16 @@
         </ul>
     </div>
 </nav>
+{% if hide_header == False: %}
+<div class="manage-account-header" class="container-fluid">
+    <div class="container">
+        <h5>{{header}}</h5>
+        {% if current_user.admin == 1: %}
+        <a class="back-to" href="{{url_for('admin_view')}}"><p>Back to dashboard</p></a>
+        {% else: %}
+        <a class="back-to" href="{{url_for('coach_view')}}"><p>Back to dashboard</p></a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
 
