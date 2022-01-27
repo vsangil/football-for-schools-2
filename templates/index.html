@@ -5,6 +5,13 @@
             <div id="login-form" class="col">
                 <h1 id="title">Football for Schools</h1>
                 <form action="{{ url_for('home') }}" method="post" novalidate autocomplete="off">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages: %}
+                            {% for message in messages: %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                     {{ form.csrf_token }}
                     {{ form.email.label}} <br/> {{ form.email(class="form-control form-control-lg") }}
                     <br/>
@@ -17,7 +24,7 @@
                 <div class="d-flex align-self-center justify-content-center">
                     <img id="main-graphic" src="{{url_for('static', filename='/images/homepage-graphics.jpg')}}">
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 </div>
