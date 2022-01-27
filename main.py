@@ -48,8 +48,8 @@ class Player(db.Model):
 
 
 
-db.create_all()
-db.session.commit()
+# db.create_all()
+# db.session.commit()
 
 
 # Login form which renders on home route.
