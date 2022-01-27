@@ -1,0 +1,64 @@
+{% include 'header2.html' %}
+<div class="manage-account-header" class="container-fluid">
+    <div class="container">
+        <h5>Manage Account</h5>
+    </div>
+</div>
+<div class="manage-account-headers container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col" id="profile">
+                <h5>Profile</h5>
+                <p class="account-text">Your email address is your identity on Football for schools and is used to log
+                    in.</p>
+            </div>
+            <div class="col">
+                <h6>Email</h6>
+                <p class="account-text">{{current_user.id}}</p>
+                <h6>School</h6>
+                <p class="account-text">{{current_user.school}}</p>
+                <h6>Phone Number</h6>
+                <p class="account-text">{{current_user.phone_number}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="manage-account-headers container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col" id="password">
+                <h5>Password</h5>
+                <p class="account-text">Keep your account secure.</p>
+            </div>
+            <div class="col">
+                <h6>Change Password</h6>
+                <form action="{{url_for('my_account')}}" method="POST">
+                    {{ form.csrf_token }}
+                    <div class="mb-3">
+                        {{form.current_password(class="form-control", placeholder="current password")}}
+                    </div>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages: %}
+                            {% for message in messages: %}
+                                <p class="form-error-messages">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <hr style="margin:5% 0;"/>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        {{form.new_password(class="form-control", placeholder="enter new password")}}
+                        <p class="account-text">Password must be 8 or more characters.</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        {{form.confirm_password(class="form-control", placeholder="confirm password")}}
+                    </div>
+                    {{form.submit(class="btn btn-primary")}}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
