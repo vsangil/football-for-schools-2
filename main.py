@@ -41,8 +41,8 @@ class Player(db.Model):
     born_in = db.Column(db.String(7), nullable=False)
 
 
-db.create_all()
-db.session.commit()
+# db.create_all()
+# db.session.commit()
 
 
 # Login form which renders on home route.
