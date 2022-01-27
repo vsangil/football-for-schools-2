@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from functools import wraps
+from sqlalchemy.orm import relationship
 import os
 
 app = Flask(__name__)
@@ -31,17 +32,23 @@ class Coach(UserMixin, db.Model):
     password = db.Column(db.String, nullable=False)
     admin = db.Column(db.Boolean, nullable=False)
 
+    players = relationship("Player", back_populates="coach")
+
 
 class Player(db.Model):
     __tablename__ = "players"
     id = db.Column(db.Integer, primary_key=True)
+
+    coach_id = db.Column(db.String, db.ForeignKey("coaches.id"))
+    coach = relationship("Coach", back_populates="players")
+
     name = db.Column(db.String(50), nullable=False)
     school = db.Column(db.String(75), nullable=False)
     born_in = db.Column(db.String(7), nullable=False)
 
 
-# db.create_all()
-# db.session.commit()
+db.create_all()
+db.session.commit()
 
 
 # Login form which renders on home route.
