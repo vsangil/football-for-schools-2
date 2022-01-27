@@ -11,7 +11,7 @@ import os
 
 app = Flask(__name__)
 # Secret key for csrf token to work on wtforms.
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "hello671")
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL1", "sqlite:///players.db")
 Bootstrap(app)
 
@@ -79,24 +79,21 @@ def home():
         email = log_in_form.email.data
         password = log_in_form.password.data
 
-        coach = Coach.query.filter_by(email=email).first()
         # Log in logic. Will check dictionary if email is
         # found, if not, denied access.
-        try:
-            if coach.email == email:
 
-                if check_password_hash(coach.password, password):
-                    print("made it here...")
-                    if coach.admin == 1:
-                        logged_in = True
-                        return redirect(url_for('admin_view'))
-                    else:
-                        logged_in = True
-                        print(f"Are you logged in? : {logged_in}")
-                    return flask.redirect(url_for('coach_view', email=email))
-            else:
-                return render_template('red_card.html')
-        except KeyError:
+        if Coach.query.filter_by(email=email).first():
+            coach = Coach.query.filter_by(email=email).first()
+            if check_password_hash(coach.password, password):
+                print("made it here...")
+                if coach.admin == 1:
+                    logged_in = True
+                    return redirect(url_for('admin_view'))
+                else:
+                    logged_in = True
+                    print(f"Are you logged in? : {logged_in}")
+                return flask.redirect(url_for('coach_view', email=email))
+        else:
             return render_template('red_card.html')
 
     return render_template('index.html', form=log_in_form)
