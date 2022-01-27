@@ -294,8 +294,20 @@ def my_account():
 
 @app.route('/admin/players-and-coaches/view')
 def view():
+    data_type = request.args.get('data_type')
+    hide_header = False
 
-    return render_template('view.html')
+    if data_type == "coaches":
+        items = db.session.query(Coach).all()
+        header = "Edit/View Coaches"
+        players = False
+
+    else:
+        players = True
+        header = "All Players"
+        items = db.session.query(Player).all()
+
+    return render_template('view.html', players=players, items=items, hide_header=hide_header, header=header)
 
 
 @app.route('/admin/add_coach')

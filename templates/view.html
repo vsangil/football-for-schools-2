@@ -1,24 +1,48 @@
 {% include 'header2.html' %}
-<div class="manage-account-header" class="container-fluid">
-    <div class="container">
-        <h5>All Players</h5>
-        {% if current_user.admin == 1: %}
-        <a class="back-to" href="{{url_for('admin_view')}}"><p>Back to dashboard</p></a>
-        {% else: %}
-        <a class="back-to" href="{{url_for('coach_view')}}"><p>Back to dashboard</p></a>
-        {% endif %}
-    </div>
-</div>
+
 <div class="container-fluid">
     <div class="container">
         <table class="table">
+            {% if players: %}
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Date of Birth</th>
                 <th scope="col">School</th>
             </tr>
+                {% for item in items: %}
+             <tr>
+                    <td>{{item.name}}</td>
+                    <td>{{item.born_in}}</td>
+                    <td>{{item.school}}</td>
+                  </tr>
+                {% endfor %}
+            {% else: %}
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">School</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone Number</th>
+                <th scope="col">Actions</th>
+                <tr>
+                {% for item in items: %}
+                    {% if item.school != 'Admin': %}
+                <tr>
+                    <td>{{item.first_name}} {{item.last_name}}</td>
+                    <td>{{item.school}}</td>
+                    <td>{{item.id}}</td>
+                    <td>{{item.phone_number}}</td>
+                    <td>
+                        <a class="action-icons" href="#"><i class="fas fa-user-times"></i></a>
+                        <a class="action-icons" href="#"><i class="fas fa-edit"></i></a>
+                    </td>
+            </tr>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endif %}
         </table>
+
+
     </div>
 </div>
 

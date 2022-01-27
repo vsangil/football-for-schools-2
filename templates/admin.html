@@ -17,7 +17,7 @@
                 </div>
                 <div class="right-items">
                     <h6>Edit Coaches</h6>
-                    <a href="{{url_for('add_coach')}}">
+                    <a href="{{url_for('view', data_type='coaches')}}">
                         <button class="btn btn-primary admin-btn">Edit Coach</button>
                     </a>
                 </div>
@@ -35,14 +35,14 @@
             <div class="col">
                 <div class="right-items">
                     <h6>View Players</h6>
-                    <a href="{{url_for('add_coach')}}">
-                        <button class="btn btn-primary admin-btn">View Players</button>
+                    <a href="{{url_for('view', data_type='players')}}">
+                        <button class="btn btn-primary admin-btn">All Players</button>
                     </a>
                 </div>
                 <div class="right-items">
                     <h6>View Schools</h6>
                     <a href="{{url_for('add_coach')}}">
-                        <button class="btn btn-primary admin-btn">View Schools</button>
+                        <button class="btn btn-primary admin-btn">All Schools</button>
                     </a>
                 </div>
 
