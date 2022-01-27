@@ -145,7 +145,32 @@ nav {
     background-color:purple;
 }
 
+.manage-account-header {
+    padding: 1% 0;
+    border-bottom: 1px solid #e7ebf3;
+}
 
+.manage-account-headers {
+    padding: 3% 0;
+    border-bottom: 1px solid #e7ebf3;
+}
+
+.account-text{
+    color: #6D6F73;
+}
+
+#profile {
+    padding 0 5%;
+}
+
+.form-error-messages {
+    color: red;
+}
+
+
+#account-link:hover {
+    color:white;
+}
 
 @media (max-width: 576px) {
 
