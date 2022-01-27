@@ -1,0 +1,25 @@
+{% include 'header2.html' %}
+<div class="manage-account-header" class="container-fluid">
+    <div class="container">
+        <h5>All Players</h5>
+        {% if current_user.admin == 1: %}
+        <a class="back-to" href="{{url_for('admin_view')}}"><p>Back to dashboard</p></a>
+        {% else: %}
+        <a class="back-to" href="{{url_for('coach_view')}}"><p>Back to dashboard</p></a>
+        {% endif %}
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="container">
+        <table class="table">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Date of Birth</th>
+                <th scope="col">School</th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+{% include 'footer.html' %}

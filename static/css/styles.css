@@ -2,6 +2,10 @@ html, body, {
 
 }
 
+.form-container {
+    margin-top:2%;
+}
+
 nav {
     background-color: #01559D;
     padding: 0 3% 0 3%;
@@ -146,13 +150,15 @@ nav {
 }
 
 .manage-account-header {
-    padding: 1% 0;
+    padding: 1% 0 0 0;
     border-bottom: 1px solid #e7ebf3;
+    background-color: #F7F7F7;
 }
 
 .manage-account-headers {
     padding: 3% 0;
     border-bottom: 1px solid #e7ebf3;
+
 }
 
 .account-text{
@@ -165,6 +171,19 @@ nav {
 
 .form-error-messages {
     color: red;
+}
+
+.back-to {
+    font-size: 0.8rem;
+    color: #6D6F73;
+}
+
+.right-items {
+    padding-bottom: 5%;
+}
+
+.admin-btn {
+    min-width: 200px;
 }
 
 

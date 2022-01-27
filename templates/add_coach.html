@@ -1,0 +1,35 @@
+{% include 'header2.html' %}
+<div class="container-fluid">
+    <div class="form-container container">
+        <form action="{{url_for('admin_view')}}" method="POST" novalidate autocomplete="off">
+            {% with messages = get_flashed_messages() %}
+                {% if messages: %}
+                    {% for message in messages: %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {{form.csrf_token}}
+            <div class="row mb-3">
+                <div class="col">{{form.first_name.label}} {{form.first_name(class="form-control")}}</div>
+                <div class="col">{{form.last_name.label}} {{form.last_name(class="form-control ")}}</div>
+            </div>
+
+            <div class="mb-3">
+                {{form.email.label}} {{form.email(class="form-control ")}}
+            </div>
+            <div class="row mb-3">
+                <div class="col">{{form.phone_number.label}} {{form.phone_number(class="form-control ")}}</div>
+            </div>
+            <div class="mb-3">
+                {{form.school.label}} {{form.school(class="form-control ")}}
+            </div>
+            <div class="mb-3">
+                {{form.password.label}} {{form.password(class="form-control")}}
+            </div>
+            {{form.submit(class="btn btn-primary")}}
+        </form>
+    </div>
+</div>
+
+{% include 'footer.html' %}
