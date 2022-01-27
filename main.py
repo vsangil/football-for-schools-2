@@ -132,6 +132,7 @@ def home():
 @login_required
 def coach_view():
 
+    hide_header = True
     add_player = AddPlayer()
     coach = Coach.query.get(current_user.id)
     all_players = []
@@ -160,46 +161,47 @@ def coach_view():
     except FileNotFoundError:
         pass
 
-    return render_template('coach.html', form=add_player, coach=coach, players=all_players)
-
+    return render_template('coach.html', form=add_player, coach=coach, players=all_players, hide_header=hide_header)
 
 
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
 
-        email = request.args.get('email')
-        player_id = request.args.get('id')
-        player_to_edit = Player.query.get(player_id)
-        month = player_to_edit.born_in[0:2]
-        year = player_to_edit.born_in[3:7]
+    hide_header = False
 
-        if request.method == "POST":
-            name = request.form.get('name')
-            month = request.form.get('month')
-            year = request.form.get('year')
-            born_in = f"{month}/{year}"
+    email = request.args.get('email')
+    player_id = request.args.get('id')
+    player_to_edit = Player.query.get(player_id)
+    month = player_to_edit.born_in[0:2]
+    year = player_to_edit.born_in[3:7]
 
-            player_to_edit.name = name
-            player_to_edit.born_in = born_in
+    if request.method == "POST":
+        name = request.form.get('name')
+        month = request.form.get('month')
+        year = request.form.get('year')
+        born_in = f"{month}/{year}"
 
-            db.session.commit()
+        player_to_edit.name = name
+        player_to_edit.born_in = born_in
 
-            return redirect(url_for('coach_view', email=email))
+        db.session.commit()
 
-        return render_template('edit.html', player=player_to_edit, month=month, year=year, email=email)
+        return redirect(url_for('coach_view', email=email))
+
+    return render_template('edit.html', player=player_to_edit, month=month, year=year, email=email, hide_header=hide_header, header="Edit Player")
 
 
 @app.route('/delete')
 @login_required
 def delete():
-        email = request.args.get('email')
-        player_id = request.args.get('id')
-        player_to_delete = Player.query.get(player_id)
-        db.session.delete(player_to_delete)
-        db.session.commit()
+    email = request.args.get('email')
+    player_id = request.args.get('id')
+    player_to_delete = Player.query.get(player_id)
+    db.session.delete(player_to_delete)
+    db.session.commit()
 
-        return redirect(url_for('coach_view', email=email))
+    return redirect(url_for('coach_view', email=email))
 
 
 def admin_only(f):
@@ -216,33 +218,7 @@ def admin_only(f):
 @admin_only
 def admin_view():
 
-        add_coach = AddCoach(admin="No")
-        del add_coach.admin
-
-        if add_coach.validate_on_submit():
-
-            salted_hashed_password = generate_password_hash(
-                add_coach.password.data,
-                method="pbkdf2:sha256",
-                salt_length=8,
-            )
-
-            new_coach = Coach(
-                id=add_coach.email.data,
-                phone_number=add_coach.phone_number.data,
-                school=add_coach.school.data,
-                first_name=add_coach.first_name.data,
-                last_name=add_coach.last_name.data,
-                password=salted_hashed_password,
-                admin=False,
-            )
-
-            db.session.add(new_coach)
-            db.session.commit()
-
-            return redirect(url_for('admin_view', form=add_coach))
-
-        return render_template('admin.html', form=add_coach)
+    return render_template('admin.html', form=add_coach, hide_header=False, header='Admin Dashboard')
 
 
 @app.route('/logout')
@@ -315,6 +291,41 @@ def my_account():
 
     return render_template('edit_coach.html', form=password)
 
+
+@app.route('/admin/players-and-coaches/view')
+def view():
+
+    return render_template('view.html')
+
+
+@app.route('/admin/add_coach')
+def add_coach():
+    coach = AddCoach(admin="No")
+    del coach.admin
+
+    if coach.validate_on_submit():
+        salted_hashed_password = generate_password_hash(
+            add_coach.password.data,
+            method="pbkdf2:sha256",
+            salt_length=8,
+        )
+
+        new_coach = Coach(
+            id=coach.email.data,
+            phone_number=coach.phone_number.data,
+            school=coach.school.data,
+            first_name=coach.first_name.data,
+            last_name=coach.last_name.data,
+            password=salted_hashed_password,
+            admin=False,
+        )
+
+        db.session.add(new_coach)
+        db.session.commit()
+
+        return redirect(url_for('admin_view', form=coach))
+
+    return render_template('add_coach.html', form=coach, hide_header=False, header='Add Coach')
 
 if __name__ == "__main__":
     app.run()
