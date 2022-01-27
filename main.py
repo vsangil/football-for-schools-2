@@ -153,7 +153,7 @@ def coach_view():
         born_in = f"{month}/{year}"
 
         # Create new player and commit to database
-        new_player = Player(name=name, school=coach.school, born_in=born_in)
+        new_player = Player(name=name, coach_id=current_user.id, school=coach.school, born_in=born_in)
         db.session.add(new_player)
         db.session.commit()
 
