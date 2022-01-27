@@ -2,6 +2,11 @@
 <div class="manage-account-header" class="container-fluid">
     <div class="container">
         <h5>Manage Account</h5>
+        {% if current_user.admin == 1: %}
+        <a class="back-to" href="{{url_for('admin_view')}}"><p>Back to dashboard</p></a>
+        {% else: %}
+        <a class="back-to" href="{{url_for('coach_view')}}"><p>Back to dashboard</p></a>
+        {% endif %}
     </div>
 </div>
 <div class="manage-account-headers container-fluid">
