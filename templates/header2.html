@@ -27,10 +27,16 @@
 <body>
 <nav class="navbar navbar-light">
     <div class="container">
-        <a id="logo2" class="navbar-brand justify-content-center" href="{{url_for('coach_view')}}">Football for Schools</a>
+        {% if current_user.admin == 1: %}
+            <a id="logo2" class="navbar-brand justify-content-center" href="{{url_for('admin_view')}}">Football for Schools</a>
+        {% else: %}
+            <a id="logo2" class="navbar-brand justify-content-center" href="{{url_for('coach_view')}}">Football for Schools</a>
+        {% endif %}
         <ul class="nav justify-content-end">
             <li class="nav-item">
+
                 <a class="nav-link white" id="account-link" aria-current="page" href="{{url_for('my_account')}}">My Account</a>
+
             </li>
             <li class="nav-item">
                 <a href="{{url_for('logout')}}" id="logout-btn" class="btn btn-warning">Logout</a>

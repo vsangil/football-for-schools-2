@@ -15,10 +15,12 @@
             <div class="col">
                 <h6>Email</h6>
                 <p class="account-text">{{current_user.id}}</p>
-                <h6>School</h6>
-                <p class="account-text">{{current_user.school}}</p>
-                <h6>Phone Number</h6>
-                <p class="account-text">{{current_user.phone_number}}</p>
+                {% if current_user.admin != 1: %}
+                    <h6>School</h6>
+                    <p class="account-text">{{current_user.school}}</p>
+                    <h6>Phone Number</h6>
+                    <p class="account-text">{{current_user.phone_number}}</p>
+                {% endif %}
             </div>
         </div>
     </div>
