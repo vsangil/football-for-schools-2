@@ -1,16 +1,19 @@
 import flask
+from flask_bootstrap import Bootstrap
 from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, EmailField, PasswordField, SelectField
+from wtforms import StringField, SubmitField, EmailField, PasswordField, SelectField, HiddenField
 from wtforms.validators import DataRequired, Email, Length
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 import os
 
 app = Flask(__name__)
 # Secret key for csrf token to work on wtforms.
 app.secret_key = "hello671"
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///players.db")
-
+Bootstrap(app)
 
 db = SQLAlchemy(app)
 
@@ -60,11 +63,12 @@ class AddPlayer(FlaskForm):
 class AddCoach(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     phone_number = StringField('Phone Number')
-    school = StringField('School - Please make sure school name is correct. This cannot be changed', validators=[DataRequired()])
+    school = StringField('School - Please make sure school name is correct. This cannot be changed',
+                         validators=[DataRequired()])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     password = PasswordField('Create a password', validators=[DataRequired(), Length(min=8)])
-    admin = SelectField(choices=[('No', 'No'), ('Yes', 'Yes'), ])
+    admin = HiddenField(validators=[Length(min=2, max=3)])
     submit = SubmitField('Add Coach')
 
 
@@ -84,7 +88,8 @@ def home():
         # found, if not, denied access.
         try:
             if coach.email == email:
-                if coach.password == password:
+
+                if check_password_hash(coach.password, password):
                     print("made it here...")
                     if coach.admin == 1:
                         logged_in = True
@@ -168,6 +173,7 @@ def edit():
     else:
         return render_template('red_card.html')
 
+
 @app.route('/delete')
 def delete():
     if logged_in:
@@ -183,28 +189,25 @@ def delete():
 @app.route('/admin', methods=["GET", "POST"])
 def admin_view():
     if logged_in:
-        add_coach = AddCoach()
+        add_coach = AddCoach(admin="No")
+        del add_coach.admin
 
         if add_coach.validate_on_submit():
-            email = add_coach.email.data
-            phone_number = add_coach.phone_number.data
-            school = add_coach.school.data
-            first_name = add_coach.first_name.data
-            last_name = add_coach.last_name.data
-            password = add_coach.password.data
-            if add_coach.admin.data == "No":
-                admin = False
-            else:
-                admin = True
+
+            salted_hashed_password = generate_password_hash(
+                add_coach.password.data,
+                method="pbkdf2:sha256",
+                salt_length=8,
+            )
 
             new_coach = Coach(
-                email=email,
-                phone_number=phone_number,
-                school=school,
-                first_name=first_name,
-                last_name=last_name,
-                password=password,
-                admin=admin,
+                email=add_coach.email.data,
+                phone_number=add_coach.phone_number.data,
+                school=add_coach.school.data,
+                first_name=add_coach.first_name.data,
+                last_name=add_coach.last_name.data,
+                password=salted_hashed_password,
+                admin=False,
             )
 
             db.session.add(new_coach)
@@ -225,9 +228,40 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route('/register-admin/register')
+@app.route('/register/register-coach', methods=["GET", "POST"])
 def register_admin():
-    pass
+    form = AddCoach(school="Admin", admin="Yes")
+    del form.school
+    del form.phone_number
+
+    if request.method == "POST":
+        if Coach.query.filter_by(email=form.email.data).first():
+
+            return redirect(url_for('register_admin'))
+
+        else:
+            salted_hashed_password = generate_password_hash(
+                form.password.data,
+                method="pbkdf2:sha256",
+                salt_length=8,
+            )
+
+            new_coach = Coach(
+                email=form.email.data,
+                phone_number="None",
+                school="Admin",
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                password=salted_hashed_password,
+                admin=True,
+            )
+
+            db.session.add(new_coach)
+            db.session.commit()
+
+            return redirect(url_for("home"))
+
+    return render_template("register.html", form=form)
 
 
 if __name__ == "__main__":
