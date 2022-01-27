@@ -9,7 +9,6 @@
             <br/>
             <br/>
             <form action="{{url_for('edit', email=email, id=player.id) }}" method="POST">
-                <h4>Edit Player</h4>
                 <div class="mb-3">
                     <label for="player-name" class="form-label">Name</label>
                     <input type="text" class="form-control" value="{{player.name}}" id="player-name" name="name"/>
@@ -22,7 +21,6 @@
                     <label for="player-name" class="form-label">Birth Year (YYY)</label>
                     <input type="text" class="form-control" value="{{year}}" id="player-year" name="year"/>
                 </div>
-                <a href="{{url_for('coach_view', email=email)}}" ><button class="btn btn-block btn-danger">Cancel</button></a>
                 <input class="btn btn-primary" type="submit">
             </form>
         </div>
