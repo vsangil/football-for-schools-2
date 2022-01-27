@@ -30,10 +30,6 @@ class Coach(db.Model):
     admin = db.Column(db.Boolean, nullable=False)
 
 
-db.create_all()
-db.session.commit()
-
-
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
