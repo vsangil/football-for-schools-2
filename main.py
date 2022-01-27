@@ -1,12 +1,12 @@
-import flask
 from flask_bootstrap import Bootstrap
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, EmailField, PasswordField, SelectField, HiddenField
 from wtforms.validators import DataRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from functools import wraps
 import os
 
 app = Flask(__name__)
@@ -17,11 +17,13 @@ Bootstrap(app)
 
 db = SQLAlchemy(app)
 
-logged_in = False
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
-class Coach(db.Model):
-    email = db.Column(db.String, primary_key=True)
+class Coach(UserMixin, db.Model):
+    __tablename__ = "coaches"
+    id = db.Column(db.String, primary_key=True)
     phone_number = db.Column(db.String, nullable=True)
     school = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
@@ -31,6 +33,7 @@ class Coach(db.Model):
 
 
 class Player(db.Model):
+    __tablename__ = "players"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     school = db.Column(db.String(75), nullable=False)
@@ -68,31 +71,56 @@ class AddCoach(FlaskForm):
     submit = SubmitField('Add Coach')
 
 
+class ChangePassword(FlaskForm):
+    current_password = PasswordField(validators=[Length(min=8)])
+    new_password = PasswordField(validators=[Length(min=8)])
+    confirm_password = PasswordField(validators=[Length(min=8)])
+    submit = SubmitField('Change Password')
+
+
+@app.errorhandler(401)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('red_card.html'), 404
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = Coach.query.get(user_id)
+    if not user:
+        return render_template('red_card.html')
+    return user
+
+
 # Home route
 @app.route('/', methods=["GET", "POST"])
 def home():
-    # Creates login form.
-    global logged_in
+
     log_in_form = LogIn()
 
     if log_in_form.validate_on_submit():
+
         email = log_in_form.email.data
         password = log_in_form.password.data
 
         # Log in logic. Will check dictionary if email is
         # found, if not, denied access.
+        coach = Coach.query.filter_by(id=email).first()
 
-        if Coach.query.filter_by(email=email).first():
-            coach = Coach.query.filter_by(email=email).first()
-            if check_password_hash(coach.password, password):
-                print("made it here...")
-                if coach.admin == 1:
-                    logged_in = True
-                    return redirect(url_for('admin_view'))
-                else:
-                    logged_in = True
-                    print(f"Are you logged in? : {logged_in}")
-                return flask.redirect(url_for('coach_view', email=email))
+        if not coach:
+            flash("That email and password combination is not correct.")
+            return redirect(url_for('home'))
+        elif not check_password_hash(coach.password, password):
+            flash("That email and password combination is not correct.")
+            return redirect(url_for('home'))
+        elif coach.admin == 1:
+            print("ADMIN LOGIN")
+            login_user(coach)
+            return redirect(url_for('admin_view'))
+        elif coach.admin == 0:
+            print("COACH LOGIN")
+            login_user(coach)
+            return redirect(url_for('coach_view', email=email))
         else:
             return render_template('red_card.html')
 
@@ -101,47 +129,44 @@ def home():
 
 # Coach route - Displays coaches players.
 @app.route('/coach/', methods=["GET", "POST"])
+@login_required
 def coach_view():
-    global logged_in
-    print(f"Coach view logged in? {logged_in}")
-    if logged_in:
-        add_player = AddPlayer()
-        email = request.args.get('email')
-        coach = Coach.query.get(email)
-        all_players = []
 
-        # Validates form on submission
-        if add_player.validate_on_submit():
-            name = add_player.name.data
-            month = add_player.month.data
-            year = add_player.year.data
-            born_in = f"{month}/{year}"
+    add_player = AddPlayer()
+    coach = Coach.query.get(current_user.id)
+    all_players = []
 
-            # Create new player and commit to database
-            new_player = Player(name=name, school=coach.school, born_in=born_in)
-            db.session.add(new_player)
-            db.session.commit()
+    # Validates form on submission
+    if add_player.validate_on_submit():
+        name = add_player.name.data
+        month = add_player.month.data
+        year = add_player.year.data
+        born_in = f"{month}/{year}"
 
-            # We redirect instead of render because redirect clears the route
-            # so there is no double submission.
-            return redirect(url_for('coach_view', email=email))
+        # Create new player and commit to database
+        new_player = Player(name=name, school=coach.school, born_in=born_in)
+        db.session.add(new_player)
+        db.session.commit()
 
-        # Tries to read players from csv if file exists
-        try:
-            # Get player database
-            all_players = Player.query.filter_by(school=coach.school).all()
+        # We redirect instead of render because redirect clears the route
+        # so there is no double submission.
+        return redirect(url_for('coach_view'))
 
-        except FileNotFoundError:
-            pass
+    # Tries to read players from csv if file exists
+    try:
+        # Get player database
+        all_players = Player.query.filter_by(school=coach.school).all()
 
-        return render_template('coach.html', form=add_player, email=email, coach=coach, players=all_players)
-    else:
-        return render_template('red_card.html')
+    except FileNotFoundError:
+        pass
+
+    return render_template('coach.html', form=add_player, coach=coach, players=all_players)
+
 
 
 @app.route('/edit', methods=['GET', 'POST'])
+@login_required
 def edit():
-    if logged_in:
 
         email = request.args.get('email')
         player_id = request.args.get('id')
@@ -163,13 +188,11 @@ def edit():
             return redirect(url_for('coach_view', email=email))
 
         return render_template('edit.html', player=player_to_edit, month=month, year=year, email=email)
-    else:
-        return render_template('red_card.html')
 
 
 @app.route('/delete')
+@login_required
 def delete():
-    if logged_in:
         email = request.args.get('email')
         player_id = request.args.get('id')
         player_to_delete = Player.query.get(player_id)
@@ -179,9 +202,20 @@ def delete():
         return redirect(url_for('coach_view', email=email))
 
 
+def admin_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.admin != 1:
+            logout()
+            return render_template('red_card.html')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @app.route('/admin', methods=["GET", "POST"])
+@admin_only
 def admin_view():
-    if logged_in:
+
         add_coach = AddCoach(admin="No")
         del add_coach.admin
 
@@ -194,7 +228,7 @@ def admin_view():
             )
 
             new_coach = Coach(
-                email=add_coach.email.data,
+                id=add_coach.email.data,
                 phone_number=add_coach.phone_number.data,
                 school=add_coach.school.data,
                 first_name=add_coach.first_name.data,
@@ -209,14 +243,11 @@ def admin_view():
             return redirect(url_for('admin_view', form=add_coach))
 
         return render_template('admin.html', form=add_coach)
-    else:
-        return render_template('red_card.html')
 
 
 @app.route('/logout')
 def logout():
-    global logged_in
-    logged_in = False
+    logout_user()
 
     return redirect(url_for('home'))
 
@@ -228,7 +259,7 @@ def register_admin():
     del form.phone_number
 
     if request.method == "POST":
-        if Coach.query.filter_by(email=form.email.data).first():
+        if Coach.query.filter_by(id=form.email.data).first():
 
             return redirect(url_for('register_admin'))
 
@@ -240,7 +271,7 @@ def register_admin():
             )
 
             new_coach = Coach(
-                email=form.email.data,
+                id=form.email.data,
                 phone_number="None",
                 school="Admin",
                 first_name=form.first_name.data,
@@ -257,5 +288,33 @@ def register_admin():
     return render_template("register.html", form=form)
 
 
+@app.route('/my-account', methods=["GET", "POST"])
+def my_account():
+    password = ChangePassword()
+
+    if password.validate_on_submit():
+        print(f"Current password: {current_user.password}")
+        if not check_password_hash(current_user.password, password.current_password.data):
+            flash("Incorrect current password.")
+        elif password.new_password.data != password.confirm_password.data:
+            flash("Passwords do not match.")
+        elif password.current_password.data == password.new_password.data:
+            flash("Password cannot be the same as previous password.")
+        else:
+            new_password = generate_password_hash(
+                password.new_password.data,
+                method="pbkdf2:sha256",
+                salt_length=8,
+            )
+
+            current_user.password = new_password
+
+            db.session.commit()
+
+            return redirect(url_for('my_account'))
+
+    return render_template('edit_coach.html', form=password)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
