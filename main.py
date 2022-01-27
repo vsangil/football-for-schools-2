@@ -310,14 +310,14 @@ def view():
     return render_template('view.html', players=players, items=items, hide_header=hide_header, header=header)
 
 
-@app.route('/admin/add_coach')
+@app.route('/admin/add_coach', methods=["GET", "POST"])
 def add_coach():
     coach = AddCoach(admin="No")
     del coach.admin
 
     if coach.validate_on_submit():
         salted_hashed_password = generate_password_hash(
-            add_coach.password.data,
+            coach.password.data,
             method="pbkdf2:sha256",
             salt_length=8,
         )
