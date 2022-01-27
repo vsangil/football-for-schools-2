@@ -11,8 +11,8 @@ import os
 
 app = Flask(__name__)
 # Secret key for csrf token to work on wtforms.
-app.secret_key = "hello671"
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///players.db")
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 Bootstrap(app)
 
 db = SQLAlchemy(app)
