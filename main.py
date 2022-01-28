@@ -128,7 +128,7 @@ def home():
         elif coach.admin == 0:
             print("COACH LOGIN")
             login_user(coach)
-            return redirect(url_for('coach_view', email=email))
+            return redirect(url_for('coach_view'))
         else:
             return render_template('red_card.html')
 
