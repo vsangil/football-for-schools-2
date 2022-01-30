@@ -176,6 +176,12 @@ nav {
 .back-to {
     font-size: 0.8rem;
     color: #6D6F73;
+    width: 50px;
+}
+
+#download-icon {
+    margin-top: 1%;
+    text-align:right;
 }
 
 .right-items {

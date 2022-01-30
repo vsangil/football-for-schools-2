@@ -49,9 +49,9 @@
     <div class="container">
         <h5>{{header}}</h5>
         {% if current_user.admin == 1: %}
-        <a class="back-to" href="{{url_for('admin_view')}}"><p>Back to dashboard</p></a>
+        <p><a class="back-to" href="{{url_for('admin_view')}}">Back to dashboard</a></p>
         {% else: %}
-        <a class="back-to" href="{{url_for('coach_view')}}"><p>Back to dashboard</p></a>
+        <p><a class="back-to" href="{{url_for('coach_view')}}">Back to dashboard</a></p>
         {% endif %}
     </div>
 </div>

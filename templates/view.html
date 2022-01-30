@@ -1,14 +1,19 @@
 {% include 'header2.html' %}
 
 <div class="container-fluid">
+
     <div class="container table-responsive">
-        <table class="table">
+        <p id="download-icon"><i  class="fas fa-cloud-download-alt"></i> Export</p>
+        <table class="table table-bordered">
+
             {% if players: %}
+            <thead class="table-light">
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">Date of Birth</th>
                 <th scope="col">School</th>
             </tr>
+            </thead>
                 {% for item in items: %}
              <tr>
                     <td>{{item.name}}</td>
@@ -17,6 +22,7 @@
                   </tr>
                 {% endfor %}
             {% else: %}
+            <thead class="table-light">
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">School</th>
@@ -24,6 +30,7 @@
                 <th scope="col">Phone Number</th>
                 <th scope="col">Actions</th>
                 <tr>
+            </thead>
                 {% for item in items: %}
                     {% if item.school != 'Admin': %}
                 <tr>

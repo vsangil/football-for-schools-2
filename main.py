@@ -8,11 +8,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from functools import wraps
 from sqlalchemy.orm import relationship
+import pandas
 import os
 
 app = Flask(__name__)
 # Secret key for csrf token to work on wtforms.
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "hello671")
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL1", "sqlite:///players.db")
 Bootstrap(app)
 
